@@ -8,8 +8,11 @@ max="95"
 filesystems=(/media/foo /media/bar /mnt/foo)
 
 for fs in ${filesystems[*]}; do
-	space=$(df -h | grep $fs | awk '{print $(NF-1)}' | sed 's/%//')
-	if [ "$space" -ge "$max" ]; then
-		echo "$fs is at "$space"%"
+	#check if filesystem is actually mounted
+	if grep -qs "$fs" /proc/mounts; then
+		space=$(df -h | grep $fs | awk '{print $(NF-1)}' | sed 's/%//')
+		if [ "$space" -ge "$max" ]; then
+			echo "$fs is at "$space"%"
+		fi
 	fi
 done
